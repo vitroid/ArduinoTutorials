@@ -52,7 +52,7 @@ Arduino Nanoのピン配列
 
 
 
-### NodeMCU
+### NodeMCU←今回はこれ
 
 * [解説(英語)](https://lastminuteengineers.com/esp8266-nodemcu-arduino-tutorial/)
 * ESP8266チップ
@@ -107,14 +107,15 @@ ESP-01sのピン配置。
 * Board: "Arduino Nano"
 * Processor: ATMega328P(Old Bootloader)
 
-### NodeMCU
+### NodeMCU←今回はこれ
 
-* [hatena](https://uepon.hatenadiary.com/entry/2017/05/13/022135)
+* [Install extra library for ESP8266](https://randomnerdtutorials.com/how-to-install-esp8266-board-arduino-ide/)
 * Board: "NodeMCU 1.0 (ESP-12E Module)"
-
+* 経験上、wdt(watchdog timer)が悪さをする。`loop()`内の処理に時間がかかりすぎると自動リセットされる!
+ 
 ### M5StickC
 
-* [Qiita](https://qiita.com/SamAkada/items/fa32d6072a832a10cd84)
+* [Install extra library for M5Stick-C](https://github.com/m5stack/M5StickC)
 * Board: "M5Stick-C"
 * Beta版のArduino IDEが要るかも。
 * 書き込み時にジャンパー線でGNDとG0を直結する必要あり。
@@ -122,6 +123,7 @@ ESP-01sのピン配置。
 
 ### ESP-01s
 
+* [Install extra library for ESP8266](https://randomnerdtutorials.com/how-to-install-esp8266-board-arduino-ide/)
 * フラッシュメモリの書き込みにはシリアルtoUSBデバイスが必要。[実売450円](https://www.amazon.co.jp/dp/B07VZX8SXD)
 * 書き込みのために、基板上の抵抗(R1?)を1つ外す必要があった。
 
@@ -130,8 +132,7 @@ ESP-01sのピン配置。
 ## プログラム開始
 
 1. ArduinoマイコンをUSBで接続する。
-
-2. Arduino IDEを開く。Newで新しいプロジェクトをひらくと、あらかじめ`setup`と`loop`が書きこまれている。`setup`はその名の通り、Arduinoの電源が入って最初に一回だけ実行される部分、`loop`は何度も繰り返し実行される部分。
+2. 新しいプロジェクトをひらくと、あらかじめ`setup`と`loop`が書きこまれている。`setup`はその名の通り、Arduinoの電源が入って最初に一回だけ実行される部分、`loop`は何度も繰り返し実行される部分。
 3. この2つの中に、ハードウェア(LED、外付けデバイスなど)の制御の方法をいろいろ書きこむ。
 4. 「✓」を押してコンパイル→エラーがでれば3へ戻る。
 5. 「→」を押してArduinoに書き込む。ここでエラーが出る場合は、通信で失敗しているか、プログラムが大きすぎて書きこめないか。
@@ -198,9 +199,9 @@ void loop(){                 // { }内を繰り返し実行する
 外付けLEDテープを光らせてみる。NeoPixel WS2812、5 V駆動。すべてのLEDの明るさを個別に指定できるLEDテープ。(ほかに、全体を同じ色で指定できるもの、色が変えられないものもある。)
 
 * とりあえず、"NeoPixel WS2812 Arduino"で検索する。
-  * Arduino IDEにNeoPixel用のライブラリを追加する。FastLEDライブラリが便利そう。
-* 配線とサンプルプログラムは[この記事](https://howtomechatronics.com/tutorials/arduino/how-to-control-ws2812b-individually-addressable-leds-using-arduino/)を参考にする。
+  * Arduino IDEにNeoPixel用のライブラリを追加する。Adafruit NeoPixelライブラリが便利そう。
   * GNDと電源(+5V)と信号線の3線を、NodeMCUのGNDとVIN(+5V)とD6に接続する。ショートさせないように注意すること。
+* File→スケッチ例→Adafruit NeoPixel→strandtestを読み込み、Pin番号をD6、LED数を6に設定する。
 
 #### サーボモーター
 
@@ -260,7 +261,7 @@ void loop() {
 
 ステッピングモーターは、正確に回転角を指定して回せるモーター。コントローラICを経由して制御する。
 
-いま手元にサンプルがないのでこれはパス。
+今回は省略。
 
 ### 通信(Blynkでの制御1)
 
@@ -276,7 +277,7 @@ void loop() {
     * 最初にもらった2000ポイントを使い切ると課金がはじまる。
   7. ボタンを押すと、細かい設定ができる。OutputをDigitalのD4(NodeMCUのOnboard LED)に設定する。
 2. Arduino側の準備
-  1. ArduinoにはBlynkのライブラリを追加する。
+  1. ArduinoにはBlynkのライブラリを追加する。(スケッチ→ライブラリをインクルード→ライブラリを管理→blynkで検索)
   2. Arduino用のプログラムは以下の通り。([Blynkのサンプル](https://examples.blynk.cc/?board=ESP8266&shield=ESP8266%20WiFi&example=GettingStarted%2FBlynkBlink))
 
 ```
