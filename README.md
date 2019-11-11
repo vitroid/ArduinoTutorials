@@ -74,6 +74,7 @@ NodeMCUのピン配列
 * ピン数は少ない。
 * USB-C接続。
 * [実売2400円](https://www.amazon.co.jp/dp/B07R1QDVWF)
+* 値段は他に比べれば高いが、いろいろ快適。
 
 ![M5Stick-C Pins](https://d2l930y2yx77uc.cloudfront.net/production/uploads/images/13390502/picture_pc_c725fbd72b41c82efaf5e3de0c36f2ca.png)
 
@@ -145,8 +146,9 @@ Arduino NanoとNodeMCUは基板上にLEDが直付けされている。
 
 Arduino NanoはD13、NodeMCUはD4、ESP-01Sは1。
 
-```BlinkLED.ino
+```c++
 int led=D4; // NodeMCU, Blue
+//int led=10; //G10, M5Stick-C, Red
 
 void setup(){                // { }内をはじめに1度だけ実行する
   Serial.begin(9600);
@@ -165,9 +167,9 @@ void loop(){                 // { }内を繰り返し実行する
 
 Serial Monitorを開くと、実行状況(Arduinoからのメッセージ)を読みとれる。
 
-明るさを調節する場合は、PWM出力で調節。(点灯と消灯を高速で繰りかえすことで明度を調節する方法) (LEDがPWM出力に対応したピンに接続されている場合)
+明るさを調節する場合は、[PWM出力](https://circuits4you.com/2017/12/21/esp8266-pwm-example/)で調節。(点灯と消灯を高速で繰りかえすことで明度を調節する方法) 
 
-```GradeLED.ino
+```c++
 int led=D4; //NodeMCU
 //int led=LED_BUILTIN; //Arduino 
 
@@ -185,7 +187,7 @@ void loop(){                 // { }内を繰り返し実行する
 }
 
 // Arduino Nanoでは中間調出ない。
-// M5Stack/M5StickにはLEDがない。
+// M5Stack/M5StickではanalogWriteがない。
 ```
 
 ### 外部デバイスの制御
@@ -218,7 +220,7 @@ void loop(){                 // { }内を繰り返し実行する
 
 Servoライブラリをそのまま使うことにする。Arduino IDE→ファイル→スケッチ例→Servo(ESP8266)→Sweepを呼びだすと、以下のようなサンプルコードが表示される。
 
-```c
+```c++
 /* Sweep
   by BARRAGAN <http://barraganstudio.com>
   This example code is in the public domain.
@@ -280,7 +282,7 @@ void loop() {
   1. ArduinoにはBlynkのライブラリを追加する。(スケッチ→ライブラリをインクルード→ライブラリを管理→blynkで検索)
   2. Arduino用のプログラムは以下の通り。([Blynkのサンプル](https://examples.blynk.cc/?board=ESP8266&shield=ESP8266%20WiFi&example=GettingStarted%2FBlynkBlink))
 
-```
+```c++
 #include <ESP8266WiFi.h>
 #include <BlynkSimpleEsp8266.h>
 
@@ -313,7 +315,7 @@ Arduinoプログラム側では、V1の値に応じてステッピングモー�
 
 サーボモーターはD5ピンに接続し、仮想ピンV1の値が変化したら、その値を角度とみなして、myservo.write()でサーボモーターに書き込む。
 
-```
+```c++
 #include <ESP8266WiFi.h>
 #include <BlynkSimpleEsp8266.h>
 #include <Servo.h>

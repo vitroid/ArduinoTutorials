@@ -1,5 +1,5 @@
 
-int led=D4; // NodeMCU, Blue https://lowvoltage.github.io/2017/07/09/Onboard-LEDs-NodeMCU-Got-Two
+//int led=D4; // NodeMCU, Blue https://lowvoltage.github.io/2017/07/09/Onboard-LEDs-NodeMCU-Got-Two
 //int led=LED_BUILTIN; //Arduino 
 
 void setup(){                // { }内をはじめに1度だけ実行する
@@ -16,4 +16,4 @@ void loop(){                 // { }内を繰り返し実行する
 }
 
 // Arduino Nanoでは中間調出ない。
-// M5Stack/M5StickにはLEDがない。
+// M5Stack/M5StickではanalogWriteがない。
