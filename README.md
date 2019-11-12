@@ -1,3 +1,5 @@
+[TOC]
+
 # Arduino Short Tutorial
 
 * Nov 11, 2019起稿
@@ -27,13 +29,22 @@
 * M5Stick-C
   ![M5Stick-C](https://images-na.ssl-images-amazon.com/images/I/71UfHfHPZKL._AC_SL1000_.jpg)
 
-これらのマイコン(マイクロコントローラ)を開発する環境(言語)は
+これらのマイコン(マイクロコントローラ)を開発する環境は
 
-* Arduino (C++)
-* UIFlow (MicroPython)
-* Obniz (JavaScript)
+* Arduino
+* UIFlow
+* Obniz
 
 などがある。それぞれ一長一短あるが、今回は最もシンプルなハードウェアを利用できるArduinoを選ぶ。(UIFlowはその名の通りUIを設計するのには適しているが画面を持たないマイコンでは有り難みが少ない。Obnizは常時インターネット接続が前提)
+
+|IDE|Arduino IDE| UIFlow    | Obniz    |
+|---|-----------|-----------|----------|
+|言語|C++        |MicroPython|JavaScript|
+|開発時Network| 不要 | 必要 | 必要 |
+|運用時Network| 不要 | 不要 | 必要 |
+|リアルタイム制御| ◎ | ○ | △ |
+|Webとの親和性| △ | △ | ◎ |
+
 
 ## Arduino IDEのインストール
 
@@ -87,7 +98,7 @@ M5Stick-Cのピン配置。
 
 * ESP8266チップ
 * Wifi搭載。
-* ピン数はとても少ない。電源制御に特化したデバイス。
+* ピン数はとても少ない。電源制御に特化したデバイス。単体で100 Vの開閉ができる。
 * 3.3 V出力。
 * [書き込み用のUSB-Serialデバイスが別途必要。](https://solarbotics.com/product/29246/)
   ![](https://cdn.solarbotics.com/products/photos/98d4879fbb50d9abca1d3153a1cf0ed9/ftdy%20to%20esp01%20diagram.jpg?w=375)
