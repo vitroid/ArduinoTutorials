@@ -9,6 +9,11 @@
 * MicroUSB cable
 * バッテリ(もしあれば)
 
+## 注意
+
+* 電気接点が露出しています。ショートに気をつけて下さい。感電することはまずありませんが、回路を焼く可能性があります。
+* 長時間、人のいないところで稼動させる場合には、絶縁をしっかり行って下さい。
+
 ## はじめに
 
 * Arduino
@@ -36,7 +41,7 @@
 
 ## ハードウェア
 
-今回準備しているのは以下の4種類。どれもArduino IDEでプログラム開発可能。
+以下のマイコンはどれも[Arduino IDE](https://www.arduino.cc/)でプログラム開発可能。
 
 ### Arduino Nano
 
@@ -50,13 +55,11 @@
 ![Arduino Nano Pins](http://christianto.tjahyadi.com/wp-content/uploads/2014/11/nano.jpg)
 Arduino Nanoのピン配列
 
-
-
 ### NodeMCU←今回はこれ
 
 * [解説(英語)](https://lastminuteengineers.com/esp8266-nodemcu-arduino-tutorial/)
 * ESP8266チップ
-* Wifi/BlueTooth搭載
+* Wifi搭載
 * AD端子(アナログ入力端子)が1本しかない。
 * いくつかのピンがWifiチップに使われていて、ユーザーの使えるピンは少ない。(GPIO6, GPIO7, GPIO8, GPIO9, GPIO10, GPIO11は使えない)
 * MicroUSB接続。
@@ -144,7 +147,13 @@ ESP-01sのピン配置。
 
 Arduino NanoとNodeMCUは基板上にLEDが直付けされている。
 
-Arduino NanoはD13、NodeMCUはD4、ESP-01Sは1。
+ピンの番号はマイコンによって違う。Arduino NanoはD13、NodeMCUはD4、ESP-01Sは1 (GPIO1)、M5Stack-Cは10 (GPIO10)。
+
+"D4"はマイコンに刻印されているピン名を指している。だいたいピンの並び順で番号が振られている「物理順序」。
+
+"GPIOx"はチップ内部から見た、インターフェイスの呼び名。「論理順序」
+
+これらの対応は、前節のピン配置図を見て確認してほしい。
 
 ```c++
 int led=D4; // NodeMCU, Blue
@@ -162,12 +171,11 @@ void loop(){                 // { }内を繰り返し実行する
   digitalWrite(led, LOW);    // ledピンにLOWを出力する
   delay(1000);               // 1秒(1000ms)待つ
 }
-// M5Stack/M5StickにはLEDがない。
 ```
 
 Serial Monitorを開くと、実行状況(Arduinoからのメッセージ)を読みとれる。
 
-明るさを調節する場合は、[PWM出力](https://circuits4you.com/2017/12/21/esp8266-pwm-example/)で調節。(点灯と消灯を高速で繰りかえすことで明度を調節する方法) 
+明るさは、[PWM出力](https://circuits4you.com/2017/12/21/esp8266-pwm-example/)で調節。(点灯と消灯を高速で繰りかえすことで明度を調節する方法) デューティー比(全時間に対する、消灯時間の割合)を0〜1023の間で調節すると、見た目の明るさが変化する。LEDの配線のしかたにより、0で消灯する場合と1023で消灯する場合がある。
 
 ```c++
 int led=D4; //NodeMCU
@@ -192,9 +200,20 @@ void loop(){                 // { }内を繰り返し実行する
 
 ### 外部デバイスの制御
 
-外部デバイスの制御方法はそれぞれに作法があり、コントローラが必要なもの(ステッピングモーター類など)や回路が必要なもの、特別な通信手順に従う必要があるものなどさまざまである。だが、ほとんどのデバイスについて、Arduinoに接続する方法はインターネットをさがせば見付かる。(インターネットで情報がみつかるデバイスを選んで接続するのが良い。)
+外部デバイスの接続方法はいろいろあるが、基本的には1本の電源線(+5 Vまたは+3.3 V)と1本の接地線(0 V)と1本1以上の信号線で接続するものがほとんどである。プログラムで信号線に適切な信号を送ったり、逆に信号を読みとったりすることで外部デバイスを制御する。
 
-小さなサーボモーターや短いLEDテープの場合は、直結できるのでかなり手っ取り早い。(同じサーボモーターやLEDテープでも消費電力が大きい場合にはすこし工夫が必要になってくる)
+また、外部デバイスの制御方法もそれぞれに作法があり、コントローラICが必要なもの(ステッピングモーター類など)や回路が必要なもの、特別な通信手順に従う必要があるものなどさまざまである。だが、ほとんどのデバイスについて、Arduinoに接続する方法はインターネットをさがせば見付かる。
+
+Arduinoが持つ接続ピンにもいろいろ種類がある。
+
+* GPIO: 汎用Input/Output端子。デジタル信号を出すことも読むこともできる。D0, D1あるいはG10といったラベルがついている。
+* AD: Arduino内部のA/D変換器に接続されており、電圧を読みとれる。ラベルはA1, A2, ... .
+* SPI, I2C, Grove: デバイスとの間の通信に使える。
+* VIN: 電源入力用端子。USB以外の外部電源から電気をとりいれる場合に使用。電気をとりだすことはできない。
+* GND: 接地。0 V。信号電圧の基準点
+* 3V3: 3.3 Vの端子。外部デバイスの電源にも使える。
+
+それぞれのデバイスをつなぐことができるピンは決まっている。無線カードリーダー(ICOCA)はSPI端子につなぎ、マイクはAD端子につながなければ機能しない。ESP-01sのようにSPI端子もAD端子ももたないマイコンではこれらのデバイスは使えないので、試作段階ではできるだけ多機能なマイコンを使うのが良い。
 
 #### NeoPixel LEDテープ
 
@@ -211,53 +230,20 @@ void loop(){                 // { }内を繰り返し実行する
 
 アナログ方式のサーボモーターでは、PWMのデューティー比で角度を指定するらしい。ということは、上のLEDの明るさを段階的に変化させるプログラムをそのまま流用して、モーターを動かせるはずだ。やってみよう。
 
-今手元にあまっているのは、SG90という型番のサーボモーター。これを"Arduino SG90"で検索すると、[日本語の解説記事](https://monoist.atmarkit.co.jp/mn/articles/1605/12/news007_2.html)もみつかる。
+今手元にあるのは、SG90という型番のサーボモーター。これを"Arduino SG90"で検索すると、[日本語の解説記事](https://monoist.atmarkit.co.jp/mn/articles/1605/12/news007_2.html)もみつかる。
 
 ##### ハードウェア(結線)
-茶色をGND(0V)、赤を3V3(+3.3V)、オレンジの信号線はD4端子につなぐ。
+茶色をGND(0V)、赤を3V3(+3.3V)、オレンジの信号線はD5端子につなぐ。
 
 ##### ソフトウェア
 
-Servoライブラリをそのまま使うことにする。Arduino IDE→ファイル→スケッチ例→Servo(ESP8266)→Sweepを呼びだすと、以下のようなサンプルコードが表示される。
+Servoライブラリをそのまま使うことにする。Arduino IDE→ファイル→スケッチ例→Servo(ESP8266)→Sweepを読みこみ、`setup()`を以下のように書きかえる。
 
 ```c++
-/* Sweep
-  by BARRAGAN <http://barraganstudio.com>
-  This example code is in the public domain.
-
-  modified 28 May 2015
-  by Michael C. Miller
-  modified 8 Nov 2013
-  by Scott Fitzgerald
-
-  http://arduino.cc/en/Tutorial/Sweep
-*/
-
-#include <Servo.h>
-
-Servo myservo;  // create servo object to control a servo
-// twelve servo objects can be created on most boards
-
-
 void setup() {
   myservo.attach(D5);  // D5ピンにサーボの黄色の信号線をつなぐ。
 }
-
-void loop() {
-  int pos;
-
-  for (pos = 0; pos <= 180; pos += 1) { // goes from 0 degrees to 180 degrees
-    // in steps of 1 degree
-    myservo.write(pos);              // tell servo to go to position in variable 'pos'
-    delay(15);                       // waits 15ms for the servo to reach the position
-  }
-  for (pos = 180; pos >= 0; pos -= 1) { // goes from 180 degrees to 0 degrees
-    myservo.write(pos);              // tell servo to go to position in variable 'pos'
-    delay(15);                       // waits 15ms for the servo to reach the position
-  }
-}
 ```
-ピン番号2(GPIO2)はD4端子に相当するが、ややこしいので、`attach(2)`は`attach(D4)`と書きかえておこう。
 
 #### ステッピングモーター
 
@@ -320,14 +306,14 @@ Arduinoプログラム側では、V1の値に応じてステッピングモー�
 #include <BlynkSimpleEsp8266.h>
 #include <Servo.h>
 
-Servo myservo;  // create servo object to control a servo
+Servo myservo;  // サーボオブジェクト
 
 extern char auth[],ssid[],pass[];
 
 void setup()
 {
   Blynk.begin(auth, ssid, pass);
-  myservo.attach(D5);  // attaches the servo on D5 to the servo object
+  myservo.attach(D5);  // サーボモーターの信号線がD5に接続されている。
 }
 
 void loop()
@@ -345,7 +331,7 @@ BLYNK_WRITE(V1)
 
 
 
-### 通信(Blynkへの制御)
+### 通信(Blynkへの制御、Web API)
 
 [Blynkの文書](https://blynkapi.docs.apiary.io/#reference/0/write-pin-value-via-get/write-pin-value-via-get)によれば、ピンの値はウェブブラウザからURLを通じて設定できる。例えば、
 
@@ -357,7 +343,7 @@ BLYNK_WRITE(V1)
 
 ### 通信(IoT)
 
-[Blynk](https://blynk.io)は[IFTTT](https://ifttt.com)とも連携でき、[IFTTT](https://ifttt.com)はGoogle HomeやAmazon Echoと連携できるので、Blynkに対応させたデバイスは音声で制御できることになる。
+[Blynk](https://blynk.io)は上のWeb APIを通じて[IFTTT](https://ifttt.com)とも連携でき、[IFTTT](https://ifttt.com)はGoogle HomeやAmazon Echoと連携できるので、Blynkに対応させたデバイスは音声で制御できることになる。
 
 詳しくは[こちら。](https://www.mgo-tec.com/blog-entry-esp32-googlehome-ifttt-webhooks-blynk.html)
 
